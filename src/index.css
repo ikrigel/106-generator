@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: rgb(14 165 233);
+    --color-primary-dark: rgb(2 132 199);
+    --color-text: rgb(15 23 42);
+    --color-bg: rgb(255 255 255);
+  }
+
+  .dark {
+    --color-primary: rgb(14 165 233);
+    --color-primary-dark: rgb(2 132 199);
+    --color-text: rgb(241 245 250);
+    --color-bg: rgb(15 23 42);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-slate-900 transition-colors duration-300;
+  }
+
+  .dark body {
+    @apply bg-slate-950 text-slate-100;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply rounded-lg bg-sky-500 px-4 py-2 font-medium text-white transition-colors hover:bg-sky-600 active:bg-sky-700 disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply rounded-lg border border-slate-300 bg-white px-4 py-2 font-medium text-slate-900 transition-colors hover:bg-slate-50 active:bg-slate-100 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700;
+  }
+
+  .btn-danger {
+    @apply rounded-lg bg-red-500 px-4 py-2 font-medium text-white transition-colors hover:bg-red-600 active:bg-red-700 disabled:opacity-50;
+  }
+
+  .form-input {
+    @apply rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 transition-colors focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:ring-offset-slate-950;
+  }
+
+  .card {
+    @apply rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800;
+  }
+}
+
+/* Utility classes */
+.transition-theme {
+  @apply transition-colors duration-300;
+}
+
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950;
+}
