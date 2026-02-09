@@ -107,7 +107,7 @@ class PdfService {
    */
   async generatePdfFromScratch(formData: Record<string, string | boolean>): Promise<PdfFillResult> {
     try {
-      const pdfDoc = PDFDocument.create() as any;
+      const pdfDoc = await PDFDocument.create();
       let page = pdfDoc.addPage([595, 842]); // A4 size
 
       const { width, height } = page.getSize();
@@ -159,7 +159,7 @@ class PdfService {
 
           // Add page break if needed
           if (yPosition < 50) {
-            page = (pdfDoc as any).addPage([595, 842]);
+            page = pdfDoc.addPage([595, 842]);
             yPosition = height - margin;
           }
         }
@@ -174,7 +174,7 @@ class PdfService {
         color: rgb(128, 128, 128),
       });
 
-      const pdfBytes = await (pdfDoc as any).save();
+      const pdfBytes = await pdfDoc.save();
       return {
         success: true,
         data: pdfBytes,

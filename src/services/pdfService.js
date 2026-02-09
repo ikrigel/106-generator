@@ -153,8 +153,10 @@ var PdfService = /** @class */ (function () {
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
-                        _d.trys.push([0, 2, , 3]);
-                        pdfDoc = PDFDocument.create();
+                        _d.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, PDFDocument.create()];
+                    case 1:
+                        pdfDoc = _d.sent();
                         page = pdfDoc.addPage([595, 842]);
                         _a = page.getSize(), width = _a.width, height = _a.height;
                         yPosition = height - 50;
@@ -212,14 +214,14 @@ var PdfService = /** @class */ (function () {
                             color: rgb(128, 128, 128),
                         });
                         return [4 /*yield*/, pdfDoc.save()];
-                    case 1:
+                    case 2:
                         pdfBytes = _d.sent();
                         return [2 /*return*/, {
                                 success: true,
                                 data: pdfBytes,
                                 message: 'PDF generated successfully',
                             }];
-                    case 2:
+                    case 3:
                         error_2 = _d.sent();
                         errorMessage = error_2 instanceof Error ? error_2.message : String(error_2);
                         return [2 /*return*/, {
@@ -227,7 +229,7 @@ var PdfService = /** @class */ (function () {
                                 error: errorMessage,
                                 message: "Failed to generate PDF: ".concat(errorMessage),
                             }];
-                    case 3: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
                 }
             });
         });
