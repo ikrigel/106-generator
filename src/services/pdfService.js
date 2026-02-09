@@ -42,6 +42,7 @@ import { PDFDocument, rgb } from 'pdf-lib';
 import { storageService } from './storageService';
 import { downloadPdf } from '@/utils/fileDownload';
 import { formatFilenameWithTimestamp } from '@/utils/dateFormatter';
+import { sanitizeForPdf } from '@/utils/textSanitizer';
 import { PDF_SOURCE_URL } from '@/constants/defaults';
 import { DEFAULT_FORM_FIELDS } from '@/constants/formFields';
 var PdfService = /** @class */ (function () {
@@ -149,7 +150,7 @@ var PdfService = /** @class */ (function () {
      */
     PdfService.prototype.generatePdfFromScratch = function (formData) {
         return __awaiter(this, void 0, void 0, function () {
-            var pdfDoc, page, _a, width, height, yPosition, margin, lineHeight, sectionSpacing, _i, _b, _c, key, value, label, displayLabel, displayValue, timestamp, pdfBytes, error_2, errorMessage;
+            var pdfDoc, page, _a, width, height, yPosition, margin, lineHeight, sectionSpacing, _i, _b, _c, key, value, label, displayLabel, displayValue, sanitizedLabel, sanitizedValue, timestamp, pdfBytes, error_2, errorMessage;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
@@ -186,14 +187,16 @@ var PdfService = /** @class */ (function () {
                                 label = key.replace(/([A-Z])/g, ' $1').trim();
                                 displayLabel = label.charAt(0).toUpperCase() + label.slice(1);
                                 displayValue = String(value);
-                                page.drawText("".concat(displayLabel, ":"), {
+                                sanitizedLabel = sanitizeForPdf("".concat(displayLabel, ":"));
+                                sanitizedValue = sanitizeForPdf(displayValue);
+                                page.drawText(sanitizedLabel, {
                                     x: margin,
                                     y: yPosition,
                                     size: 11,
                                     color: rgb(0, 0, 0),
                                 });
                                 // rgb values must be 0-1, not 0-255. rgb(0, 102, 204) -> rgb(0, 0.4, 0.8)
-                                page.drawText(displayValue, {
+                                page.drawText(sanitizedValue, {
                                     x: margin + 150,
                                     y: yPosition,
                                     size: 11,

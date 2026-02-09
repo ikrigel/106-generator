@@ -8,6 +8,7 @@ import { storageService } from './storageService';
 import { downloadPdf } from '@/utils/fileDownload';
 import { generateLogId } from '@/utils/logger';
 import { formatFilenameWithTimestamp } from '@/utils/dateFormatter';
+import { sanitizeForPdf } from '@/utils/textSanitizer';
 import type { PdfField, PdfExtractionResult, PdfFillResult, PdfGenerationOptions } from '@/types/pdf.types';
 import { PDF_SOURCE_URL } from '@/constants/defaults';
 import { DEFAULT_FORM_FIELDS } from '@/constants/formFields';
@@ -141,7 +142,11 @@ class PdfService {
           const displayLabel = label.charAt(0).toUpperCase() + label.slice(1);
           const displayValue = String(value);
 
-          page.drawText(`${displayLabel}:`, {
+          // Sanitize text for PDF rendering (supports Hebrew and other characters)
+          const sanitizedLabel = sanitizeForPdf(`${displayLabel}:`);
+          const sanitizedValue = sanitizeForPdf(displayValue);
+
+          page.drawText(sanitizedLabel, {
             x: margin,
             y: yPosition,
             size: 11,
@@ -149,7 +154,7 @@ class PdfService {
           });
 
           // rgb values must be 0-1, not 0-255. rgb(0, 102, 204) -> rgb(0, 0.4, 0.8)
-          page.drawText(displayValue, {
+          page.drawText(sanitizedValue, {
             x: margin + 150,
             y: yPosition,
             size: 11,
