@@ -5,7 +5,7 @@
   "framework": "vite",
   "headers": [
     {
-      "source": "/assets/.*",
+      "source": "/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -14,7 +14,7 @@
       ]
     },
     {
-      "source": "/2024.pdf",
+      "source": "/(.*\\.pdf)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -23,7 +23,7 @@
       ]
     },
     {
-      "source": "/(.*)",
+      "source": "/:path((?!_next|[^\\.]+(\\.[^/]+$))*)",
       "headers": [
         {
           "key": "X-Content-Type-Options",
