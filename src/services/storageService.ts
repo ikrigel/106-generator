@@ -102,6 +102,13 @@ class StorageService {
   }
 
   /**
+   * Save logs to localStorage
+   */
+  setLogs(logs: LogEntry[]): boolean {
+    return saveToStorage(STORAGE_KEYS.LOGS, logs);
+  }
+
+  /**
    * Delete logs by IDs
    */
   deleteLogs(ids: string[]): boolean {
