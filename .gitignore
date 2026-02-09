@@ -22,7 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-2024.pdf
 
 # Environment variables
 .env
@@ -31,6 +30,11 @@ dist-ssr
 
 # Build outputs
 *.tsbuildinfo
+*.d.ts
+*.js
+!vite.config.js
+!postcss.config.js
+!tailwind.config.js
 
 # Testing
 coverage
