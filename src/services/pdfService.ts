@@ -148,11 +148,12 @@ class PdfService {
             color: rgb(0, 0, 0),
           });
 
+          // rgb values must be 0-1, not 0-255. rgb(0, 102, 204) -> rgb(0, 0.4, 0.8)
           page.drawText(displayValue, {
             x: margin + 150,
             y: yPosition,
             size: 11,
-            color: rgb(0, 102, 204),
+            color: rgb(0, 0.4, 0.8),
           });
 
           yPosition -= lineHeight;
@@ -171,7 +172,7 @@ class PdfService {
         x: margin,
         y: 20,
         size: 9,
-        color: rgb(128, 128, 128),
+        color: rgb(0.5, 0.5, 0.5),
       });
 
       const pdfBytes = await pdfDoc.save();
