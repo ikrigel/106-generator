@@ -1,27 +1,46 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { PageLayout } from '@/components/layout/PageLayout';
+import FormGenerator from '@/pages/FormGenerator';
+import Settings from '@/pages/Settings';
+import Logs from '@/pages/Logs';
+import Help from '@/pages/Help';
+import About from '@/pages/About';
+import { ROUTES } from '@/constants/routes';
 
 export default function App() {
   return (
-    <div className="flex min-h-screen flex-col bg-white dark:bg-slate-950">
-      <header className="border-b border-slate-200 dark:border-slate-700">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-            MOC 106 Form Generator
-          </h1>
-        </div>
-      </header>
+    <Router>
+      <Routes>
+        <Route
+          path="*"
+          element={
+            <PageLayout>
+              <Routes>
+                <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.FORM} replace />} />
+                <Route path={ROUTES.FORM} element={<FormGenerator />} />
+                <Route path={ROUTES.SETTINGS} element={<Settings />} />
+                <Route path={ROUTES.LOGS} element={<Logs />} />
+                <Route path={ROUTES.HELP} element={<Help />} />
+                <Route path={ROUTES.ABOUT} element={<About />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </PageLayout>
+          }
+        />
+      </Routes>
+    </Router>
+  );
+}
 
-      <main className="flex-1">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <p className="text-slate-600 dark:text-slate-400">Loading...</p>
-        </div>
-      </main>
-
-      <footer className="border-t border-slate-200 dark:border-slate-700">
-        <div className="mx-auto max-w-7xl px-4 py-4 text-center text-sm text-slate-600 dark:text-slate-400 sm:px-6 lg:px-8">
-          <p>&copy; 2024 MOC 106 Form Generator. All rights reserved.</p>
-        </div>
-      </footer>
+function NotFound() {
+  return (
+    <div className="text-center">
+      <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100">404</h1>
+      <p className="mt-2 text-slate-600 dark:text-slate-400">Page not found</p>
+      <a href={ROUTES.FORM} className="mt-4 inline-block btn-primary">
+        Back to Form
+      </a>
     </div>
   );
 }
