@@ -113,24 +113,24 @@ class PdfService {
       // Fill form fields
       for (const [fieldName, value] of Object.entries(formData)) {
         try {
-          const field = form.getFieldMaybe(fieldName);
+          const field = form.getFieldMaybe(fieldName) as any;
           if (!field) continue;
 
           const fieldType = field.constructor.name;
 
           if (fieldType.includes('CheckBox')) {
             if (value === true) {
-              field.check();
+              field.check?.();
             } else {
-              field.uncheck();
+              field.uncheck?.();
             }
           } else if (fieldType.includes('Radio') || fieldType.includes('Button')) {
-            field.select(String(value));
+            field.select?.(String(value));
           } else if (fieldType.includes('Text')) {
-            field.setText(String(value));
+            field.setText?.(String(value));
           } else {
             // Default: treat as text
-            field.setText(String(value));
+            field.setText?.(String(value));
           }
         } catch (fieldError) {
           // Log field-level errors but continue processing

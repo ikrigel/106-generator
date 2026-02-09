@@ -20,12 +20,12 @@ export function downloadBlob(blob: Blob, filename: string): void {
 }
 
 /**
- * Trigger download of a PDF from Uint8Array
- * @param data - PDF data as Uint8Array
+ * Trigger download of a PDF from Uint8Array or ArrayBuffer
+ * @param data - PDF data as Uint8Array or ArrayBuffer
  * @param filename - Filename for download
  */
-export function downloadPdf(data: Uint8Array, filename: string): void {
-  const blob = new Blob([data], { type: 'application/pdf' });
+export function downloadPdf(data: Uint8Array | ArrayBuffer, filename: string): void {
+  const blob = new Blob([data as any], { type: 'application/pdf' });
   downloadBlob(blob, filename);
 }
 

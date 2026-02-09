@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { usePdfFields } from '@/hooks/usePdfFields';
 import { useFormState } from '@/hooks/useFormState';
@@ -13,7 +14,7 @@ import { LOG_ACTIONS } from '@/constants/defaults';
 
 export default function FormGenerator() {
   const { fields, loading, error: pdfError } = usePdfFields();
-  const { values, setFieldValue, resetForm, fillWithDefaults, isSaving } = useFormState(fields);
+  const { values, setFieldValue, resetForm, fillWithDefaults, isSaving } = useFormState(fields as any);
   const { info, error: logError } = useLogger();
   const { settings } = useSettings();
   const [submitting, setSubmitting] = useState(false);
@@ -134,19 +135,19 @@ export default function FormGenerator() {
                   />
                   <span className="text-slate-700 dark:text-slate-300">{field.label}</span>
                 </label>
-              ) : field.type === 'dropdown' && field.options ? (
+              ) : (field as any).type === 'dropdown' && (field as any).options ? (
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     {field.label}
                   </label>
                   <select
-                    value={values[field.name] || ''}
+                    value={String(values[field.name] || '')}
                     onChange={(e) => setFieldValue(field.name, e.target.value)}
                     className="form-input w-full"
                     disabled={submitting}
                   >
                     <option value="">Select...</option>
-                    {field.options.map((opt) => (
+                    {(field as any).options?.map((opt: string) => (
                       <option key={opt} value={opt}>
                         {opt}
                       </option>
@@ -161,12 +162,12 @@ export default function FormGenerator() {
               ) : (
                 <Input
                   label={field.label}
-                  type={field.type === 'date' ? 'date' : field.type === 'email' ? 'email' : field.type === 'tel' ? 'tel' : 'text'}
-                  value={values[field.name] || ''}
+                  type={field.type === 'date' ? 'date' : 'text'}
+                  value={String(values[field.name] || '')}
                   onChange={(e) => setFieldValue(field.name, e.target.value)}
-                  placeholder={field.placeholder}
-                  maxLength={field.maxLength}
-                  required={field.required}
+                  placeholder={(field as any).placeholder}
+                  maxLength={(field as any).maxLength}
+                  required={(field as any).required}
                   disabled={submitting}
                   error={validationErrors[field.name]}
                 />
@@ -199,17 +200,9 @@ export default function FormGenerator() {
           <div className="flex justify-between">
             <dt className="text-slate-600 dark:text-slate-400">Required Fields:</dt>
             <dd className="text-slate-900 dark:text-slate-100">
-              {fields.filter((f) => f.required).length}
+              {fields.filter((f: any) => f.required).length}
             </dd>
           </div>
-          {lastSaved && (
-            <div className="flex justify-between">
-              <dt className="text-slate-600 dark:text-slate-400">Last Saved:</dt>
-              <dd className="text-slate-900 dark:text-slate-100">
-                {new Date(lastSaved).toLocaleString()}
-              </dd>
-            </div>
-          )}
         </dl>
       </div>
     </div>

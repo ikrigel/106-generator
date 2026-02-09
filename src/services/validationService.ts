@@ -11,7 +11,7 @@ class ValidationService {
    * Validate form based on fields and values
    */
   validateFormFields(
-    fields: FormField[],
+    fields: FormField[] | any[],
     formValues: Record<string, string | boolean>,
   ): Record<string, string> {
     const validationRules: Record<

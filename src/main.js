@@ -1,0 +1,10 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { SettingsProvider } from '@/contexts/SettingsContext';
+import { LogProvider } from '@/contexts/LogContext';
+import './index.css';
+ReactDOM.createRoot(document.getElementById('root')).render(_jsx(React.StrictMode, { children: _jsx(ErrorBoundary, { children: _jsx(ThemeProvider, { children: _jsx(SettingsProvider, { children: _jsx(LogProvider, { children: _jsx(App, {}) }) }) }) }) }));
