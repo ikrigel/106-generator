@@ -112,71 +112,126 @@ class PdfService {
       let page = pdfDoc.addPage([595, 842]); // A4 size
 
       const { width, height } = page.getSize();
-      let yPosition = height - 50;
-      const margin = 40;
-      const lineHeight = 25;
-      const sectionSpacing = 35;
+      let yPosition = height - 40;
+      const margin = 30;
+      const lineHeight = 18;
+      const sectionSpacing = 25;
+      const labelWidth = 180;
+
+      // Helper function to add section title
+      const addSection = (title: string) => {
+        if (yPosition < 80) {
+          page = pdfDoc.addPage([595, 842]);
+          yPosition = height - margin;
+        }
+
+        yPosition -= 8;
+        page.drawText(title, {
+          x: margin,
+          y: yPosition,
+          size: 13,
+          color: rgb(0, 0.2, 0.6),
+        });
+        yPosition -= sectionSpacing;
+      };
+
+      // Helper function to add a form field row
+      const addField = (label: string, value: string | boolean | undefined) => {
+        if (!value) return;
+
+        if (yPosition < 50) {
+          page = pdfDoc.addPage([595, 842]);
+          yPosition = height - margin;
+        }
+
+        const displayValue = String(value);
+        const sanitizedLabel = sanitizeForPdf(`${label}:`);
+        const sanitizedValue = sanitizeForPdf(displayValue);
+
+        // Draw label
+        page.drawText(sanitizedLabel, {
+          x: margin,
+          y: yPosition,
+          size: 10,
+          color: rgb(0, 0, 0),
+        });
+
+        // Draw value
+        page.drawText(sanitizedValue, {
+          x: margin + labelWidth,
+          y: yPosition,
+          size: 10,
+          color: rgb(0, 0.4, 0.8),
+        });
+
+        yPosition -= lineHeight;
+      };
 
       // Title
-      page.drawText('MOC 106 Form - 2024', {
+      page.drawText('MOC 106 Income Tax Return Form - 2024', {
         x: margin,
         y: yPosition,
-        size: 18,
+        size: 16,
         color: rgb(0, 0, 0),
       });
-      yPosition -= sectionSpacing;
+      yPosition -= sectionSpacing + 10;
 
-      // Form data section
-      page.drawText('Form Information:', {
-        x: margin,
-        y: yPosition,
-        size: 14,
-        color: rgb(0, 0, 0),
-      });
-      yPosition -= lineHeight;
+      // Personal Information Section
+      addSection('PERSONAL INFORMATION');
+      addField('Full Name', formData.full_name);
+      addField('ID Number', formData.id_number);
+      addField('Date of Birth', formData.date_of_birth);
+      addField('Marital Status', formData.marital_status);
+      addField('Address', formData.address);
+      addField('City', formData.city);
+      addField('Postal Code', formData.postal_code);
+      addField('Phone', formData.phone);
+      addField('Email', formData.email);
 
-      // Display all form fields
-      for (const [key, value] of Object.entries(formData)) {
-        if (value) {
-          const label = key.replace(/([A-Z])/g, ' $1').trim();
-          const displayLabel = label.charAt(0).toUpperCase() + label.slice(1);
-          const displayValue = String(value);
+      // Income Information Section
+      addSection('INCOME INFORMATION');
+      addField('Salary / Wages', formData.salary_wages);
+      addField('Self-Employment Income', formData.self_employment_income);
+      addField('Interest Income', formData.interest_income);
+      addField('Dividend Income', formData.dividend_income);
+      addField('Rental Income', formData.rental_income);
+      addField('Other Income', formData.other_income);
+      addField('Total Income', formData.total_income);
 
-          // Sanitize text for PDF rendering (supports Hebrew and other characters)
-          const sanitizedLabel = sanitizeForPdf(`${displayLabel}:`);
-          const sanitizedValue = sanitizeForPdf(displayValue);
+      // Deductions Section
+      addSection('DEDUCTIONS');
+      addField('Professional Expenses', formData.professional_expenses);
+      addField('Charitable Donations', formData.charitable_donations);
+      addField('Mortgage Interest', formData.mortgage_interest);
+      addField('Medical Expenses', formData.medical_expenses);
+      addField('Life Insurance Premiums', formData.life_insurance_premiums);
+      addField('Education Expenses', formData.education_expenses);
+      addField('Child Support / Alimony', formData.child_support_alimony);
+      addField('Total Deductions', formData.total_deductions);
 
-          page.drawText(sanitizedLabel, {
-            x: margin,
-            y: yPosition,
-            size: 11,
-            color: rgb(0, 0, 0),
-          });
+      // Tax Information Section
+      addSection('TAX CALCULATION');
+      addField('Taxable Income', formData.taxable_income);
+      addField('Income Tax Withheld', formData.income_tax_withheld);
+      addField('VAT Paid', formData.vat_paid);
+      addField('Estimated Tax Payments', formData.estimated_tax_payments);
+      addField('Total Tax Credits', formData.total_tax_credits);
+      addField('Total Tax Due', formData.tax_due);
 
-          // rgb values must be 0-1, not 0-255. rgb(0, 102, 204) -> rgb(0, 0.4, 0.8)
-          page.drawText(sanitizedValue, {
-            x: margin + 150,
-            y: yPosition,
-            size: 11,
-            color: rgb(0, 0.4, 0.8),
-          });
-
-          yPosition -= lineHeight;
-
-          // Add page break if needed
-          if (yPosition < 50) {
-            page = pdfDoc.addPage([595, 842]);
-            yPosition = height - margin;
-          }
-        }
-      }
+      // Additional Information Section
+      addSection('ADDITIONAL INFORMATION');
+      addField('Statement Date', formData.statement_date);
+      addField('Preparer Name', formData.preparer_name);
+      addField('Preparer Signature', formData.preparer_signature);
+      addField('Taxpayer Signature', formData.taxpayer_signature);
+      addField('Notes', formData.notes);
 
       // Footer with timestamp
       const timestamp = new Date().toLocaleString();
       page.drawText(`Generated: ${timestamp}`, {
         x: margin,
-        y: 20,
-        size: 9,
+        y: 25,
+        size: 8,
         color: rgb(0.5, 0.5, 0.5),
       });
 
