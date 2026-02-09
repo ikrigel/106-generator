@@ -67,16 +67,16 @@ export default function About() {
         <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-4">Developer</h2>
         <div className="space-y-3">
           <p className="text-slate-700 dark:text-slate-300">
-            <strong>Created by:</strong> Your Name
+            <strong>Created by:</strong> Igal Krigel
           </p>
           <p className="text-slate-700 dark:text-slate-300">
-            <strong>Email:</strong> your.email@example.com
+            <strong>Email:</strong> <a href="mailto:ikrigel@gmail.com" className="text-sky-600 hover:text-sky-700 dark:text-sky-400">ikrigel@gmail.com</a>
           </p>
           <p className="text-slate-700 dark:text-slate-300">
-            <strong>GitHub:</strong> <a href="https://github.com" className="text-sky-600 hover:text-sky-700 dark:text-sky-400">github.com/yourprofile</a>
+            <strong>GitHub:</strong> <a href="https://github.com/ikrigel" className="text-sky-600 hover:text-sky-700 dark:text-sky-400">github.com/ikrigel</a>
           </p>
           <p className="text-slate-700 dark:text-slate-300">
-            <strong>Website:</strong> <a href="https://yourwebsite.com" className="text-sky-600 hover:text-sky-700 dark:text-sky-400">yourwebsite.com</a>
+            <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/ikrigel/" className="text-sky-600 hover:text-sky-700 dark:text-sky-400">linkedin.com/in/ikrigel</a>
           </p>
         </div>
       </section>
