@@ -25,14 +25,14 @@ export default function FormGenerator() {
     return <Loading message="Loading form fields..." />;
   }
 
-  if (pdfError || fields.length === 0) {
+  if (pdfError) {
     return (
       <div className="space-y-4">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">MOC 106 Form</h1>
         <Alert
           type="error"
           title="Error"
-          message={pdfError || 'No form fields found in PDF'}
+          message={pdfError}
         />
       </div>
     );

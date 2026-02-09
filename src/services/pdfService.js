@@ -43,6 +43,7 @@ import { storageService } from './storageService';
 import { downloadPdf } from '@/utils/fileDownload';
 import { formatFilenameWithTimestamp } from '@/utils/dateFormatter';
 import { PDF_SOURCE_URL } from '@/constants/defaults';
+import { DEFAULT_FORM_FIELDS } from '@/constants/formFields';
 var PdfService = /** @class */ (function () {
     function PdfService() {
     }
@@ -51,7 +52,7 @@ var PdfService = /** @class */ (function () {
      */
     PdfService.prototype.extractPdfFields = function () {
         return __awaiter(this, arguments, void 0, function (pdfUrl) {
-            var response, arrayBuffer, pdfDoc, form, fields, extractedFields, _i, fields_1, field, name_1, fieldType, type, options, fieldObject, cache, error_1, errorMessage;
+            var response, arrayBuffer, pdfDoc, form, fields, extractedFields, _i, fields_1, field, name_1, fieldType, type, options, fieldObject, fieldsToReturn, cache, error_1, errorMessage;
             if (pdfUrl === void 0) { pdfUrl = PDF_SOURCE_URL; }
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -112,16 +113,21 @@ var PdfService = /** @class */ (function () {
                                 options: options,
                             });
                         }
+                        fieldsToReturn = extractedFields.length > 0
+                            ? extractedFields
+                            : DEFAULT_FORM_FIELDS;
                         cache = {
                             version: arrayBuffer.byteLength.toString(),
-                            fields: extractedFields,
+                            fields: fieldsToReturn,
                             extractedAt: new Date().toISOString(),
                         };
                         storageService.setPdfFields(cache);
                         return [2 /*return*/, {
                                 success: true,
-                                fields: extractedFields,
-                                message: "Extracted ".concat(extractedFields.length, " fields from PDF"),
+                                fields: fieldsToReturn,
+                                message: extractedFields.length > 0
+                                    ? "Extracted ".concat(extractedFields.length, " fields from PDF")
+                                    : "No form fields found in PDF, using default form",
                             }];
                     case 4:
                         error_1 = _a.sent();

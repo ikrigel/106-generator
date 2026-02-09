@@ -10,6 +10,7 @@ import { generateLogId } from '@/utils/logger';
 import { formatFilenameWithTimestamp } from '@/utils/dateFormatter';
 import type { PdfField, PdfExtractionResult, PdfFillResult, PdfGenerationOptions } from '@/types/pdf.types';
 import { PDF_SOURCE_URL } from '@/constants/defaults';
+import { DEFAULT_FORM_FIELDS } from '@/constants/formFields';
 
 class PdfService {
   /**
@@ -69,18 +70,25 @@ class PdfService {
         });
       }
 
+      // Use default fields if no fields were extracted from PDF
+      const fieldsToReturn = extractedFields.length > 0
+        ? extractedFields
+        : (DEFAULT_FORM_FIELDS as unknown as PdfField[]);
+
       // Cache the extracted fields
       const cache = {
         version: arrayBuffer.byteLength.toString(),
-        fields: extractedFields,
+        fields: fieldsToReturn,
         extractedAt: new Date().toISOString(),
       };
       storageService.setPdfFields(cache);
 
       return {
         success: true,
-        fields: extractedFields,
-        message: `Extracted ${extractedFields.length} fields from PDF`,
+        fields: fieldsToReturn,
+        message: extractedFields.length > 0
+          ? `Extracted ${extractedFields.length} fields from PDF`
+          : `No form fields found in PDF, using default form`,
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);

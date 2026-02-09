@@ -60,8 +60,8 @@ export default function FormGenerator() {
     if (loading) {
         return _jsx(Loading, { message: "Loading form fields..." });
     }
-    if (pdfError || fields.length === 0) {
-        return (_jsxs("div", { className: "space-y-4", children: [_jsx("h1", { className: "text-3xl font-bold text-slate-900 dark:text-slate-100", children: "MOC 106 Form" }), _jsx(Alert, { type: "error", title: "Error", message: pdfError || 'No form fields found in PDF' })] }));
+    if (pdfError) {
+        return (_jsxs("div", { className: "space-y-4", children: [_jsx("h1", { className: "text-3xl font-bold text-slate-900 dark:text-slate-100", children: "MOC 106 Form" }), _jsx(Alert, { type: "error", title: "Error", message: pdfError })] }));
     }
     var handleSubmit = function (e) { return __awaiter(_this, void 0, void 0, function () {
         var errors, filename, result, err_1, errorMsg;

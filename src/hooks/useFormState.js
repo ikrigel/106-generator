@@ -20,7 +20,11 @@ export function useFormState(fields) {
         if (savedData) {
             return savedData.fields;
         }
-        return Object.fromEntries(fields.map(function (f) { return [f.name, '']; }));
+        // Initialize with default values from settings, or empty strings
+        return Object.fromEntries(fields.map(function (f) { return [
+            f.name,
+            settings.user.defaultValues[f.name] || '',
+        ]; }));
     }), values = _a[0], setValues = _a[1];
     var _b = useState(false), isSaving = _b[0], setIsSaving = _b[1];
     var _c = useState(null), lastSaved = _c[0], setLastSaved = _c[1];

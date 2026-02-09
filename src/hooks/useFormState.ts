@@ -10,7 +10,13 @@ export function useFormState(fields: { name: string }[]) {
     if (savedData) {
       return savedData.fields;
     }
-    return Object.fromEntries(fields.map((f) => [f.name, '']));
+    // Initialize with default values from settings, or empty strings
+    return Object.fromEntries(
+      fields.map((f) => [
+        f.name,
+        settings.user.defaultValues[f.name] || '',
+      ]),
+    );
   });
 
   const [isSaving, setIsSaving] = useState(false);
