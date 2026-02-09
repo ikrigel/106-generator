@@ -3,7 +3,7 @@
  * Handles PDF field extraction, filling, and generation
  */
 
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, rgb } from 'pdf-lib';
 import { storageService } from './storageService';
 import { downloadPdf } from '@/utils/fileDownload';
 import { generateLogId } from '@/utils/logger';
@@ -102,7 +102,97 @@ class PdfService {
   }
 
   /**
+   * Generate a new PDF document from form data (no template needed)
+   * Creates a clean, professional form document with user data
+   */
+  async generatePdfFromScratch(formData: Record<string, string | boolean>): Promise<PdfFillResult> {
+    try {
+      const pdfDoc = PDFDocument.create() as any;
+      let page = pdfDoc.addPage([595, 842]); // A4 size
+
+      const { width, height } = page.getSize();
+      let yPosition = height - 50;
+      const margin = 40;
+      const lineHeight = 25;
+      const sectionSpacing = 35;
+
+      // Title
+      page.drawText('MOC 106 Form - 2024', {
+        x: margin,
+        y: yPosition,
+        size: 18,
+        color: rgb(0, 0, 0),
+      });
+      yPosition -= sectionSpacing;
+
+      // Form data section
+      page.drawText('Form Information:', {
+        x: margin,
+        y: yPosition,
+        size: 14,
+        color: rgb(0, 0, 0),
+      });
+      yPosition -= lineHeight;
+
+      // Display all form fields
+      for (const [key, value] of Object.entries(formData)) {
+        if (value) {
+          const label = key.replace(/([A-Z])/g, ' $1').trim();
+          const displayLabel = label.charAt(0).toUpperCase() + label.slice(1);
+          const displayValue = String(value);
+
+          page.drawText(`${displayLabel}:`, {
+            x: margin,
+            y: yPosition,
+            size: 11,
+            color: rgb(0, 0, 0),
+          });
+
+          page.drawText(displayValue, {
+            x: margin + 150,
+            y: yPosition,
+            size: 11,
+            color: rgb(0, 102, 204),
+          });
+
+          yPosition -= lineHeight;
+
+          // Add page break if needed
+          if (yPosition < 50) {
+            page = (pdfDoc as any).addPage([595, 842]);
+            yPosition = height - margin;
+          }
+        }
+      }
+
+      // Footer with timestamp
+      const timestamp = new Date().toLocaleString();
+      page.drawText(`Generated: ${timestamp}`, {
+        x: margin,
+        y: 20,
+        size: 9,
+        color: rgb(128, 128, 128),
+      });
+
+      const pdfBytes = await (pdfDoc as any).save();
+      return {
+        success: true,
+        data: pdfBytes,
+        message: 'PDF generated successfully',
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return {
+        success: false,
+        error: errorMessage,
+        message: `Failed to generate PDF: ${errorMessage}`,
+      };
+    }
+  }
+
+  /**
    * Fill PDF with data and return as Uint8Array
+   * Falls back to generating from scratch if template PDF doesn't have form fields
    */
   async fillPdfFields(
     formData: Record<string, string | boolean>,
@@ -117,13 +207,21 @@ class PdfService {
       const arrayBuffer = await response.arrayBuffer();
       const pdfDoc = await PDFDocument.load(arrayBuffer);
       const form = pdfDoc.getForm();
+      const fields = form.getFields();
 
-      // Fill form fields
+      // If no form fields exist, generate from scratch instead
+      if (fields.length === 0) {
+        return this.generatePdfFromScratch(formData);
+      }
+
+      // Try to fill existing form fields
+      let filledAnyField = false;
       for (const [fieldName, value] of Object.entries(formData)) {
         try {
           const field = form.getFieldMaybe(fieldName) as any;
           if (!field) continue;
 
+          filledAnyField = true;
           const fieldType = field.constructor.name;
 
           if (fieldType.includes('CheckBox')) {
@@ -137,18 +235,19 @@ class PdfService {
           } else if (fieldType.includes('Text')) {
             field.setText?.(String(value));
           } else {
-            // Default: treat as text
             field.setText?.(String(value));
           }
         } catch (fieldError) {
-          // Log field-level errors but continue processing
           console.warn(`Error filling field ${fieldName}:`, fieldError);
         }
       }
 
-      // Flatten the form to make it uneditable (optional, improves compatibility)
-      form.flatten();
+      // If no fields were filled, generate from scratch
+      if (!filledAnyField) {
+        return this.generatePdfFromScratch(formData);
+      }
 
+      form.flatten();
       const pdfBytes = await pdfDoc.save();
       return {
         success: true,
@@ -156,12 +255,8 @@ class PdfService {
         message: 'PDF filled successfully',
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      return {
-        success: false,
-        error: errorMessage,
-        message: `Failed to fill PDF: ${errorMessage}`,
-      };
+      // Fallback to generating PDF from scratch on any error
+      return this.generatePdfFromScratch(formData);
     }
   }
 

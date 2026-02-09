@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, rgb } from 'pdf-lib';
 import { storageService } from './storageService';
 import { downloadPdf } from '@/utils/fileDownload';
 import { formatFilenameWithTimestamp } from '@/utils/dateFormatter';
@@ -144,11 +144,101 @@ var PdfService = /** @class */ (function () {
         });
     };
     /**
+     * Generate a new PDF document from form data (no template needed)
+     * Creates a clean, professional form document with user data
+     */
+    PdfService.prototype.generatePdfFromScratch = function (formData) {
+        return __awaiter(this, void 0, void 0, function () {
+            var pdfDoc, page, _a, width, height, yPosition, margin, lineHeight, sectionSpacing, _i, _b, _c, key, value, label, displayLabel, displayValue, timestamp, pdfBytes, error_2, errorMessage;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        _d.trys.push([0, 2, , 3]);
+                        pdfDoc = PDFDocument.create();
+                        page = pdfDoc.addPage([595, 842]);
+                        _a = page.getSize(), width = _a.width, height = _a.height;
+                        yPosition = height - 50;
+                        margin = 40;
+                        lineHeight = 25;
+                        sectionSpacing = 35;
+                        // Title
+                        page.drawText('MOC 106 Form - 2024', {
+                            x: margin,
+                            y: yPosition,
+                            size: 18,
+                            color: rgb(0, 0, 0),
+                        });
+                        yPosition -= sectionSpacing;
+                        // Form data section
+                        page.drawText('Form Information:', {
+                            x: margin,
+                            y: yPosition,
+                            size: 14,
+                            color: rgb(0, 0, 0),
+                        });
+                        yPosition -= lineHeight;
+                        // Display all form fields
+                        for (_i = 0, _b = Object.entries(formData); _i < _b.length; _i++) {
+                            _c = _b[_i], key = _c[0], value = _c[1];
+                            if (value) {
+                                label = key.replace(/([A-Z])/g, ' $1').trim();
+                                displayLabel = label.charAt(0).toUpperCase() + label.slice(1);
+                                displayValue = String(value);
+                                page.drawText("".concat(displayLabel, ":"), {
+                                    x: margin,
+                                    y: yPosition,
+                                    size: 11,
+                                    color: rgb(0, 0, 0),
+                                });
+                                page.drawText(displayValue, {
+                                    x: margin + 150,
+                                    y: yPosition,
+                                    size: 11,
+                                    color: rgb(0, 102, 204),
+                                });
+                                yPosition -= lineHeight;
+                                // Add page break if needed
+                                if (yPosition < 50) {
+                                    page = pdfDoc.addPage([595, 842]);
+                                    yPosition = height - margin;
+                                }
+                            }
+                        }
+                        timestamp = new Date().toLocaleString();
+                        page.drawText("Generated: ".concat(timestamp), {
+                            x: margin,
+                            y: 20,
+                            size: 9,
+                            color: rgb(128, 128, 128),
+                        });
+                        return [4 /*yield*/, pdfDoc.save()];
+                    case 1:
+                        pdfBytes = _d.sent();
+                        return [2 /*return*/, {
+                                success: true,
+                                data: pdfBytes,
+                                message: 'PDF generated successfully',
+                            }];
+                    case 2:
+                        error_2 = _d.sent();
+                        errorMessage = error_2 instanceof Error ? error_2.message : String(error_2);
+                        return [2 /*return*/, {
+                                success: false,
+                                error: errorMessage,
+                                message: "Failed to generate PDF: ".concat(errorMessage),
+                            }];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    /**
      * Fill PDF with data and return as Uint8Array
+     * Falls back to generating from scratch if template PDF doesn't have form fields
      */
     PdfService.prototype.fillPdfFields = function (formData_1) {
         return __awaiter(this, arguments, void 0, function (formData, pdfUrl) {
-            var response, arrayBuffer, pdfDoc, form, _i, _a, _b, fieldName, value, field, fieldType, pdfBytes, error_2, errorMessage;
+            var response, arrayBuffer, pdfDoc, form, fields, filledAnyField, _i, _a, _b, fieldName, value, field, fieldType, pdfBytes, error_3;
             var _c, _d, _e, _f, _g;
             if (pdfUrl === void 0) { pdfUrl = PDF_SOURCE_URL; }
             return __generator(this, function (_h) {
@@ -168,13 +258,19 @@ var PdfService = /** @class */ (function () {
                     case 3:
                         pdfDoc = _h.sent();
                         form = pdfDoc.getForm();
-                        // Fill form fields
+                        fields = form.getFields();
+                        // If no form fields exist, generate from scratch instead
+                        if (fields.length === 0) {
+                            return [2 /*return*/, this.generatePdfFromScratch(formData)];
+                        }
+                        filledAnyField = false;
                         for (_i = 0, _a = Object.entries(formData); _i < _a.length; _i++) {
                             _b = _a[_i], fieldName = _b[0], value = _b[1];
                             try {
                                 field = form.getFieldMaybe(fieldName);
                                 if (!field)
                                     continue;
+                                filledAnyField = true;
                                 fieldType = field.constructor.name;
                                 if (fieldType.includes('CheckBox')) {
                                     if (value === true) {
@@ -191,16 +287,17 @@ var PdfService = /** @class */ (function () {
                                     (_f = field.setText) === null || _f === void 0 ? void 0 : _f.call(field, String(value));
                                 }
                                 else {
-                                    // Default: treat as text
                                     (_g = field.setText) === null || _g === void 0 ? void 0 : _g.call(field, String(value));
                                 }
                             }
                             catch (fieldError) {
-                                // Log field-level errors but continue processing
                                 console.warn("Error filling field ".concat(fieldName, ":"), fieldError);
                             }
                         }
-                        // Flatten the form to make it uneditable (optional, improves compatibility)
+                        // If no fields were filled, generate from scratch
+                        if (!filledAnyField) {
+                            return [2 /*return*/, this.generatePdfFromScratch(formData)];
+                        }
                         form.flatten();
                         return [4 /*yield*/, pdfDoc.save()];
                     case 4:
@@ -211,13 +308,9 @@ var PdfService = /** @class */ (function () {
                                 message: 'PDF filled successfully',
                             }];
                     case 5:
-                        error_2 = _h.sent();
-                        errorMessage = error_2 instanceof Error ? error_2.message : String(error_2);
-                        return [2 /*return*/, {
-                                success: false,
-                                error: errorMessage,
-                                message: "Failed to fill PDF: ".concat(errorMessage),
-                            }];
+                        error_3 = _h.sent();
+                        // Fallback to generating PDF from scratch on any error
+                        return [2 /*return*/, this.generatePdfFromScratch(formData)];
                     case 6: return [2 /*return*/];
                 }
             });
@@ -228,7 +321,7 @@ var PdfService = /** @class */ (function () {
      */
     PdfService.prototype.generateAndDownloadPdf = function (formData_1) {
         return __awaiter(this, arguments, void 0, function (formData, options, pdfUrl) {
-            var fillResult, baseFilename, finalFilename, error_3, errorMessage;
+            var fillResult, baseFilename, finalFilename, error_4, errorMessage;
             if (options === void 0) { options = {}; }
             if (pdfUrl === void 0) { pdfUrl = PDF_SOURCE_URL; }
             return __generator(this, function (_a) {
@@ -256,8 +349,8 @@ var PdfService = /** @class */ (function () {
                                 message: "PDF generated successfully: ".concat(finalFilename),
                             }];
                     case 2:
-                        error_3 = _a.sent();
-                        errorMessage = error_3 instanceof Error ? error_3.message : String(error_3);
+                        error_4 = _a.sent();
+                        errorMessage = error_4 instanceof Error ? error_4.message : String(error_4);
                         return [2 /*return*/, {
                                 success: false,
                                 error: errorMessage,
