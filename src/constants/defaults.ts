@@ -8,7 +8,13 @@ import { APP_VERSION } from './storage';
 export const DEFAULT_SETTINGS: Settings = {
   version: APP_VERSION,
   user: {
-    defaultValues: {},
+    defaultValues: {
+      name: 'פולו ❤️ מרקו',
+      'full_name': 'פולו ❤️ מרקו',
+      'fullName': 'פולו ❤️ מרקו',
+      'firstName': 'פולו',
+      'lastName': 'מרקו',
+    },
     autoSave: true,
     autoSaveInterval: 30000, // 30 seconds
   },
