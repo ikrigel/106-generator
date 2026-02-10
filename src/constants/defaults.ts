@@ -9,11 +9,54 @@ export const DEFAULT_SETTINGS: Settings = {
   version: APP_VERSION,
   user: {
     defaultValues: {
+      // Personal Information
       name: 'פולו ❤️ מרקו',
       'full_name': 'פולו ❤️ מרקו',
       'fullName': 'פולו ❤️ מרקו',
       'firstName': 'פולו',
       'lastName': 'מרקו',
+      'id_number': '123456789',
+      'date_of_birth': '1990-01-01',
+      'marital_status': 'Single',
+      'address': '123 Main Street',
+      'city': 'Tel Aviv',
+      'postal_code': '12345',
+      'phone': '+972-55-1234567',
+      'email': 'user@example.com',
+
+      // Income Information
+      'salary_wages': '50000',
+      'self_employment_income': '10000',
+      'interest_income': '500',
+      'dividend_income': '1000',
+      'rental_income': '2000',
+      'other_income': '',
+      'total_income': '63500',
+
+      // Deductions
+      'professional_expenses': '5000',
+      'charitable_donations': '500',
+      'mortgage_interest': '3000',
+      'medical_expenses': '1000',
+      'life_insurance_premiums': '500',
+      'education_expenses': '2000',
+      'child_support_alimony': '0',
+      'total_deductions': '12000',
+
+      // Tax Information
+      'taxable_income': '51500',
+      'income_tax_withheld': '10000',
+      'vat_paid': '2000',
+      'estimated_tax_payments': '1500',
+      'total_tax_credits': '500',
+      'tax_due': '2500',
+
+      // Additional Information
+      'statement_date': new Date().toISOString().split('T')[0],
+      'preparer_name': '',
+      'preparer_signature': '',
+      'taxpayer_signature': 'פולו מרקו',
+      'notes': '',
     },
     autoSave: true,
     autoSaveInterval: 30000, // 30 seconds

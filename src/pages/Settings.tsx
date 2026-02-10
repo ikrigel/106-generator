@@ -5,6 +5,7 @@
 
 import React, { useState, useRef } from 'react';
 import { useSettings } from '@/hooks/useSettings';
+import { storageService } from '@/services/storageService';
 
 export default function Settings() {
   const { settings, updateSettings, resetSettings, exportSettings, importSettings } = useSettings();
@@ -120,6 +121,13 @@ export default function Settings() {
     if (window.confirm('Are you sure you want to reset all settings to defaults?')) {
       resetSettings();
       setMessage({ type: 'success', text: 'Settings reset to defaults' });
+    }
+  };
+
+  const handleClearFormData = () => {
+    if (window.confirm('Are you sure you want to clear all saved form data? This cannot be undone.')) {
+      storageService.clearFormData();
+      setMessage({ type: 'success', text: 'Form data cleared successfully' });
     }
   };
 
@@ -288,7 +296,14 @@ export default function Settings() {
             onClick={handleReset}
             className="btn-danger"
           >
-            Reset to Defaults
+            Reset Settings
+          </button>
+
+          <button
+            onClick={handleClearFormData}
+            className="btn-danger"
+          >
+            Clear Form Data
           </button>
         </div>
 
