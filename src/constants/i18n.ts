@@ -139,6 +139,16 @@ export const translations = {
     requiredField: 'This field is required',
     invalidEmail: 'Please enter a valid email address',
     invalidDate: 'Please enter a valid date',
+
+    // Field Customization
+    fieldCustomization: 'Field Customization',
+    customizeFormFields: 'Customize which fields appear in the form',
+    fieldTitle: 'Field Title',
+    visible: 'Visible',
+    hide: 'Hide',
+    show: 'Show',
+    resetFieldsToDefault: 'Reset to Default',
+    fieldSettingsSaved: 'Field settings saved',
   },
   he: {
     // Common
@@ -274,6 +284,16 @@ export const translations = {
     requiredField: 'שדה זה נדרש',
     invalidEmail: 'אנא הכנס כתובת דוא"ל תקפה',
     invalidDate: 'אנא הכנס תאריך תקף',
+
+    // Field Customization
+    fieldCustomization: 'התאמת שדות',
+    customizeFormFields: 'התאם אילו שדות מופיעים בטופס',
+    fieldTitle: 'כותרת שדה',
+    visible: 'גלוי',
+    hide: 'הסתר',
+    show: 'הצג',
+    resetFieldsToDefault: 'אפס לברירת מחדל',
+    fieldSettingsSaved: 'הגדרות השדות שמורות',
   },
 };
 

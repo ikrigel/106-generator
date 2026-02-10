@@ -122,10 +122,10 @@ export default function FormGenerator() {
           {isSaving && <span className="text-sm text-slate-500 dark:text-slate-400">{t('saving')}</span>}
         </div>
 
-        {/* Form Fields */}
-        <div className="space-y-6">
+        {/* Form Fields - Grid Layout for Compactness */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {fields.map((field) => (
-            <div key={field.name}>
+            <div key={field.name} className="min-h-fit">
               {field.type === 'checkbox' ? (
                 <label className="flex items-center gap-3">
                   <input
