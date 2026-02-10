@@ -4,6 +4,7 @@ import { usePdfFields } from '@/hooks/usePdfFields';
 import { useFormState } from '@/hooks/useFormState';
 import { useLogger } from '@/hooks/useLogger';
 import { useSettings } from '@/hooks/useSettings';
+import { useLanguage } from '@/hooks/useLanguage';
 import { pdfService } from '@/services/pdfService';
 import { validationService } from '@/services/validationService';
 import { Button } from '@/components/ui/Button';
@@ -17,6 +18,7 @@ export default function FormGenerator() {
   const { values, setFieldValue, resetForm, fillWithDefaults, isSaving } = useFormState(fields as any);
   const { info, error: logError } = useLogger();
   const { settings } = useSettings();
+  const { language, t } = useLanguage();
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -47,7 +49,7 @@ export default function FormGenerator() {
       setValidationErrors(errors);
       setMessage({
         type: 'error',
-        text: `Please correct ${Object.keys(errors).length} field(s)`,
+        text: `${t('pleaseCorrectFields')} ${Object.keys(errors).length} ${t('fieldError')}`,
       });
       return;
     }
@@ -62,13 +64,13 @@ export default function FormGenerator() {
       const result = await pdfService.generateAndDownloadPdf(values, {
         filename,
         includeTimestamp: settings.pdf.includeTimestamp,
-      });
+      }, undefined, language);
 
       if (result.success) {
         info(LOG_ACTIONS.PDF_GENERATED, 'PDF generated and downloaded');
         setMessage({
           type: 'success',
-          text: 'PDF generated and downloaded successfully!',
+          text: t('pdfGeneratedSuccess'),
         });
         resetForm();
         setValidationErrors({});
@@ -94,9 +96,9 @@ export default function FormGenerator() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">MOC 106 Form</h1>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">{t('formHeading')}</h1>
         <p className="mt-2 text-slate-600 dark:text-slate-400">
-          Fill in the form fields and download your customized PDF
+          {t('formDescription')}
         </p>
       </div>
 
@@ -112,12 +114,12 @@ export default function FormGenerator() {
         {/* Toolbar */}
         <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-4 dark:border-slate-700">
           <Button onClick={fillWithDefaults} variant="secondary" disabled={submitting}>
-            📋 Use Defaults
+            {t('useDefaults')}
           </Button>
           <Button onClick={resetForm} variant="secondary" disabled={submitting}>
-            🔄 Clear Form
+            {t('clearForm')}
           </Button>
-          {isSaving && <span className="text-sm text-slate-500 dark:text-slate-400">💾 Saving...</span>}
+          {isSaving && <span className="text-sm text-slate-500 dark:text-slate-400">{t('saving')}</span>}
         </div>
 
         {/* Form Fields */}
@@ -184,21 +186,21 @@ export default function FormGenerator() {
             loading={submitting}
             className="flex-1"
           >
-            📥 Generate & Download PDF
+            {t('generatePdf')}
           </Button>
         </div>
       </form>
 
       {/* Info */}
       <div className="card p-6">
-        <h3 className="font-semibold text-slate-900 dark:text-slate-100">Form Information</h3>
+        <h3 className="font-semibold text-slate-900 dark:text-slate-100">{t('formInformation')}</h3>
         <dl className="mt-4 space-y-2 text-sm">
           <div className="flex justify-between">
-            <dt className="text-slate-600 dark:text-slate-400">Total Fields:</dt>
+            <dt className="text-slate-600 dark:text-slate-400">{t('totalFields')}</dt>
             <dd className="text-slate-900 dark:text-slate-100">{fields.length}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-slate-600 dark:text-slate-400">Required Fields:</dt>
+            <dt className="text-slate-600 dark:text-slate-400">{t('requiredFields')}</dt>
             <dd className="text-slate-900 dark:text-slate-100">
               {fields.filter((f: any) => f.required).length}
             </dd>

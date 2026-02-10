@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ThemeSwitcher } from '../common/ThemeSwitcher';
+import { LanguageSwitcher } from '../common/LanguageSwitcher';
+import { useLanguage } from '@/hooks/useLanguage';
 import { ROUTES } from '@/constants/routes';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   const navLinks = [
-    { label: 'Form', href: ROUTES.FORM },
-    { label: 'Settings', href: ROUTES.SETTINGS },
-    { label: 'Logs', href: ROUTES.LOGS },
-    { label: 'Help', href: ROUTES.HELP },
-    { label: 'About', href: ROUTES.ABOUT },
+    { label: t('form'), href: ROUTES.FORM },
+    { label: t('settings'), href: ROUTES.SETTINGS },
+    { label: t('logs'), href: ROUTES.LOGS },
+    { label: t('help'), href: ROUTES.HELP },
+    { label: t('about'), href: ROUTES.ABOUT },
   ];
 
   return (
@@ -38,6 +41,7 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-4">
+            <LanguageSwitcher />
             <ThemeSwitcher />
 
             <button

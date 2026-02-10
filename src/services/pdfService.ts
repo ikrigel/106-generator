@@ -9,6 +9,7 @@ import { downloadPdf } from '@/utils/fileDownload';
 import { generateLogId } from '@/utils/logger';
 import { formatFilenameWithTimestamp } from '@/utils/dateFormatter';
 import { sanitizeForPdf } from '@/utils/textSanitizer';
+import { translations, type Language } from '@/constants/i18n';
 import type { PdfField, PdfExtractionResult, PdfFillResult, PdfGenerationOptions } from '@/types/pdf.types';
 import { PDF_SOURCE_URL } from '@/constants/defaults';
 import { DEFAULT_FORM_FIELDS } from '@/constants/formFields';
@@ -105,8 +106,13 @@ class PdfService {
   /**
    * Generate a new PDF document from form data (no template needed)
    * Creates a clean, professional form document with user data
+   * @param formData Form data to populate
+   * @param language Language for PDF (en or he)
    */
-  async generatePdfFromScratch(formData: Record<string, string | boolean>): Promise<PdfFillResult> {
+  async generatePdfFromScratch(
+    formData: Record<string, string | boolean>,
+    language: Language = 'en'
+  ): Promise<PdfFillResult> {
     try {
       const pdfDoc = await PDFDocument.create();
       let page = pdfDoc.addPage([595, 842]); // A4 size
@@ -167,8 +173,13 @@ class PdfService {
         yPosition -= lineHeight;
       };
 
+      // Get translations for this language
+      const translate = (key: keyof typeof translations.en): string => {
+        return (translations as Record<Language, Record<string, string>>)[language][key] || String(key);
+      };
+
       // Title
-      page.drawText('MOC 106 Income Tax Return Form - 2024', {
+      page.drawText(translate('mocFormTitle'), {
         x: margin,
         y: yPosition,
         size: 16,
@@ -177,58 +188,58 @@ class PdfService {
       yPosition -= sectionSpacing + 10;
 
       // Personal Information Section
-      addSection('PERSONAL INFORMATION');
-      addField('Full Name', formData.full_name);
-      addField('ID Number', formData.id_number);
-      addField('Date of Birth', formData.date_of_birth);
-      addField('Marital Status', formData.marital_status);
-      addField('Address', formData.address);
-      addField('City', formData.city);
-      addField('Postal Code', formData.postal_code);
-      addField('Phone', formData.phone);
-      addField('Email', formData.email);
+      addSection(translate('personalInformation'));
+      addField(translate('full_name'), formData.full_name);
+      addField(translate('id_number'), formData.id_number);
+      addField(translate('date_of_birth'), formData.date_of_birth);
+      addField(translate('marital_status'), formData.marital_status);
+      addField(translate('address'), formData.address);
+      addField(translate('city'), formData.city);
+      addField(translate('postal_code'), formData.postal_code);
+      addField(translate('phone'), formData.phone);
+      addField(translate('email'), formData.email);
 
       // Income Information Section
-      addSection('INCOME INFORMATION');
-      addField('Salary / Wages', formData.salary_wages);
-      addField('Self-Employment Income', formData.self_employment_income);
-      addField('Interest Income', formData.interest_income);
-      addField('Dividend Income', formData.dividend_income);
-      addField('Rental Income', formData.rental_income);
-      addField('Other Income', formData.other_income);
-      addField('Total Income', formData.total_income);
+      addSection(translate('incomeInformation'));
+      addField(translate('salary_wages'), formData.salary_wages);
+      addField(translate('self_employment_income'), formData.self_employment_income);
+      addField(translate('interest_income'), formData.interest_income);
+      addField(translate('dividend_income'), formData.dividend_income);
+      addField(translate('rental_income'), formData.rental_income);
+      addField(translate('other_income'), formData.other_income);
+      addField(translate('total_income'), formData.total_income);
 
       // Deductions Section
-      addSection('DEDUCTIONS');
-      addField('Professional Expenses', formData.professional_expenses);
-      addField('Charitable Donations', formData.charitable_donations);
-      addField('Mortgage Interest', formData.mortgage_interest);
-      addField('Medical Expenses', formData.medical_expenses);
-      addField('Life Insurance Premiums', formData.life_insurance_premiums);
-      addField('Education Expenses', formData.education_expenses);
-      addField('Child Support / Alimony', formData.child_support_alimony);
-      addField('Total Deductions', formData.total_deductions);
+      addSection(translate('deductions'));
+      addField(translate('professional_expenses'), formData.professional_expenses);
+      addField(translate('charitable_donations'), formData.charitable_donations);
+      addField(translate('mortgage_interest'), formData.mortgage_interest);
+      addField(translate('medical_expenses'), formData.medical_expenses);
+      addField(translate('life_insurance_premiums'), formData.life_insurance_premiums);
+      addField(translate('education_expenses'), formData.education_expenses);
+      addField(translate('child_support_alimony'), formData.child_support_alimony);
+      addField(translate('total_deductions'), formData.total_deductions);
 
       // Tax Information Section
-      addSection('TAX CALCULATION');
-      addField('Taxable Income', formData.taxable_income);
-      addField('Income Tax Withheld', formData.income_tax_withheld);
-      addField('VAT Paid', formData.vat_paid);
-      addField('Estimated Tax Payments', formData.estimated_tax_payments);
-      addField('Total Tax Credits', formData.total_tax_credits);
-      addField('Total Tax Due', formData.tax_due);
+      addSection(translate('taxCalculation'));
+      addField(translate('taxable_income'), formData.taxable_income);
+      addField(translate('income_tax_withheld'), formData.income_tax_withheld);
+      addField(translate('vat_paid'), formData.vat_paid);
+      addField(translate('estimated_tax_payments'), formData.estimated_tax_payments);
+      addField(translate('total_tax_credits'), formData.total_tax_credits);
+      addField(translate('tax_due'), formData.tax_due);
 
       // Additional Information Section
-      addSection('ADDITIONAL INFORMATION');
-      addField('Statement Date', formData.statement_date);
-      addField('Preparer Name', formData.preparer_name);
-      addField('Preparer Signature', formData.preparer_signature);
-      addField('Taxpayer Signature', formData.taxpayer_signature);
-      addField('Notes', formData.notes);
+      addSection(translate('additionalInformation'));
+      addField(translate('statement_date'), formData.statement_date);
+      addField(translate('preparer_name'), formData.preparer_name);
+      addField(translate('preparer_signature'), formData.preparer_signature);
+      addField(translate('taxpayer_signature'), formData.taxpayer_signature);
+      addField(translate('notes'), formData.notes);
 
       // Footer with timestamp
       const timestamp = new Date().toLocaleString();
-      page.drawText(`Generated: ${timestamp}`, {
+      page.drawText(`${translate('generatedDate')} ${timestamp}`, {
         x: margin,
         y: 25,
         size: 8,
@@ -254,10 +265,14 @@ class PdfService {
   /**
    * Fill PDF with data and return as Uint8Array
    * Falls back to generating from scratch if template PDF doesn't have form fields
+   * @param formData Form data to populate
+   * @param pdfUrl URL to PDF template
+   * @param language Language for PDF (en or he)
    */
   async fillPdfFields(
     formData: Record<string, string | boolean>,
     pdfUrl: string = PDF_SOURCE_URL,
+    language: Language = 'en'
   ): Promise<PdfFillResult> {
     try {
       const response = await fetch(pdfUrl);
@@ -272,7 +287,7 @@ class PdfService {
 
       // If no form fields exist, generate from scratch instead
       if (fields.length === 0) {
-        return this.generatePdfFromScratch(formData);
+        return this.generatePdfFromScratch(formData, language);
       }
 
       // Try to fill existing form fields
@@ -305,7 +320,7 @@ class PdfService {
 
       // If no fields were filled, generate from scratch
       if (!filledAnyField) {
-        return this.generatePdfFromScratch(formData);
+        return this.generatePdfFromScratch(formData, language);
       }
 
       form.flatten();
@@ -317,24 +332,29 @@ class PdfService {
       };
     } catch (error) {
       // Fallback to generating PDF from scratch on any error
-      return this.generatePdfFromScratch(formData);
+      return this.generatePdfFromScratch(formData, language);
     }
   }
 
   /**
    * Generate and download filled PDF
+   * @param formData Form data to populate
+   * @param options PDF generation options
+   * @param pdfUrl URL to PDF template
+   * @param language Language for PDF (en or he)
    */
   async generateAndDownloadPdf(
     formData: Record<string, string | boolean>,
     options: PdfGenerationOptions = {},
     pdfUrl: string = PDF_SOURCE_URL,
+    language: Language = 'en'
   ): Promise<{
     success: boolean;
     error?: string;
     message?: string;
   }> {
     try {
-      const fillResult = await this.fillPdfFields(formData, pdfUrl);
+      const fillResult = await this.fillPdfFields(formData, pdfUrl, language);
       if (!fillResult.success || !fillResult.data) {
         return {
           success: false,

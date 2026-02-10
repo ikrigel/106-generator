@@ -5,18 +5,21 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { SettingsProvider } from '@/contexts/SettingsContext';
 import { LogProvider } from '@/contexts/LogContext';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <ThemeProvider>
-        <SettingsProvider>
-          <LogProvider>
-            <App />
-          </LogProvider>
-        </SettingsProvider>
-      </ThemeProvider>
+      <LanguageProvider>
+        <ThemeProvider>
+          <SettingsProvider>
+            <LogProvider>
+              <App />
+            </LogProvider>
+          </SettingsProvider>
+        </ThemeProvider>
+      </LanguageProvider>
     </ErrorBoundary>
   </React.StrictMode>,
 );
